@@ -50,6 +50,13 @@ public class ControllerMove extends LinearOpMode {
     private DcMotor motorWheelRight = null;
     private DcMotor motorWheelLeft = null;
     private Servo servoIntakeRotate = null;
+    private Servo servoLeftClaw = null;
+    private Servo servoRightClaw = null;
+    private Servo servoBucketDoor = null;
+    private Servo servoLeftViper = null;
+    private Servo servoRightViper = null;
+    private DcMotor slideLeftViper = null;
+    private DcMotor slideRightViper = null;
 
     @Override
     public void runOpMode() {
@@ -61,23 +68,36 @@ public class ControllerMove extends LinearOpMode {
         motorTopLeft = hardwareMap.get(DcMotor.class, "Motor 3");
         motorBackLeft = hardwareMap.get(DcMotor.class, "Motor 4");
         
+        slideLeftViper = hardwareMap.get(DcMotor.class, "Left Viper Slide");
+        slideRightViper = hardwareMap.get(DcMotor.class, "Right Viper Slide");
+        
         motorWheelRight = hardwareMap.get(DcMotor.class, "Left Duck");
         motorWheelLeft = hardwareMap.get(DcMotor.class, "Right Duck");
         
         servoIntakeRotate = hardwareMap.get(Servo.class, "Intake Rotate");
+        
+        servoLeftClaw = hardwareMap.get(Servo.class, "Left Claw");
+        servoRightClaw = hardwareMap.get(Servo.class, "Right Claw");
+        
+        servoBucketDoor = hardwareMap.get(Servo.class, "Bucket Door");
 
+        servoLeftViper = hardwareMap.get(Servo.class, "Left Viper Servo");
+        servoRightViper = hardwareMap.get(Servo.class, "Right Viper Servo");
+        
+        
+        
         waitForStart();
         runtime.reset();
 
         while (opModeIsActive()) {
-            
-            double x = -gamepad1.right_stick_x;
-            if (x > 0) {
+            // controller 1
+            double y = -gamepad1.right_stick_x;
+            if (y > 0) {
                 motorTopRight.setPower(-0.5f);
                 motorTopLeft.setPower(-0.5f);
                 motorBackRight.setPower(0.5f);
                 motorBackLeft.setPower(0.5f);
-            } else if (x < 0) {
+            } else if (y < 0) {
                 motorTopRight.setPower(0.5f);
                 motorTopLeft.setPower(0.5f);
                 motorBackRight.setPower(-0.5f);
@@ -89,17 +109,17 @@ public class ControllerMove extends LinearOpMode {
                 motorBackLeft.setPower(0f);
             }
             
-            double y = -gamepad1.left_stick_y;
-            if (y > 0) {
-                motorTopRight.setPower(0.8f);
-                motorTopLeft.setPower(-0.8f);
-                motorBackRight.setPower(0.8f);
-                motorBackLeft.setPower(-0.8f);
-            } else if (y < 0) {
-                motorTopRight.setPower(-0.8f);
-                motorTopLeft.setPower(0.8f);
-                motorBackRight.setPower(-0.8f);
-                motorBackLeft.setPower(0.8f);
+            double x = -gamepad1.left_stick_y;
+            if (x > 0) {
+                motorTopRight.setPower(0.66f);
+                motorTopLeft.setPower(-0.66f);
+                motorBackRight.setPower(0.66f);
+                motorBackLeft.setPower(-0.66f);
+            } else if (x < 0) {
+                motorTopRight.setPower(-0.66f);
+                motorTopLeft.setPower(0.66f);
+                motorBackRight.setPower(-0.66f);
+                motorBackLeft.setPower(0.66f);
             } else {
                 motorTopRight.setPower(0f);
                 motorTopLeft.setPower(0f);
@@ -107,23 +127,89 @@ public class ControllerMove extends LinearOpMode {
                 motorBackLeft.setPower(0f);
             }
             
+            double x2 = -gamepad1.left_stick_x;
+            if (x2 > 0) {
+                motorTopRight.setPower(-0.66f);
+                motorTopLeft.setPower(-0.66f);
+                motorBackRight.setPower(-0.33f);
+                motorBackLeft.setPower(-0.33f);
+            } else if (x2 < 0) {
+                motorTopRight.setPower(0.66f);
+                motorTopLeft.setPower(0.66f);
+                motorBackRight.setPower(0.33f);
+                motorBackLeft.setPower(0.33f);
+            } else {
+                motorTopRight.setPower(0f);
+                motorTopLeft.setPower(0f);
+                motorBackRight.setPower(0f);
+                motorBackLeft.setPower(0f);
+            }
+            
+            
             if (gamepad1.a) {
                 motorWheelLeft.setPower(1f);
             } else {
                 motorWheelLeft.setPower(0f);
             }
             
-            if (gamepad1.b) {
+            if (gamepad1.y) {
                 motorWheelRight.setPower(1f);
             } else {
                 motorWheelRight.setPower(0f);
             }
             
-            if (gamepad1.x) {
-                servoIntakeRotate.setPosition(0.5f);
-            } else {
-                servoIntakeRotate.setPosition(0.75f);
+            // controller 2
+            
+            // claw height
+            if (gamepad2.dpad_down) {
+                servoIntakeRotate.setPosition(.3f);
             }
+            if (gamepad2.dpad_left||gamepad2.dpad_right) {
+                servoIntakeRotate.setPosition(.5f);
+            }
+            if (gamepad2.dpad_up) {
+                servoIntakeRotate.setPosition(.82f);
+            }
+            
+            // claw open
+            if (gamepad2.left_bumper) {
+                servoRightClaw.setPosition(.55f);
+                servoLeftClaw.setPosition(.55f);
+            }
+            // claw closed
+            if (gamepad2.right_bumper) {
+                servoRightClaw.setPosition(.4f);
+                servoLeftClaw.setPosition(.7f);
+            }
+            
+            if (gamepad2.a) {
+                servoBucketDoor.setPosition(.4f);
+            } else {
+                servoBucketDoor.setPosition(.25f);
+            }
+            
+            if (gamepad2.y) {
+                servoRightViper.setPosition(.95f);
+                servoLeftViper.setPosition(.05f);
+            } else {
+                servoRightViper.setPosition(.09f);
+                servoLeftViper.setPosition(.91f);
+            }
+            
+            double i = -gamepad2.right_stick_x;
+            if (i > 0) {
+                slideLeftViper.setPower(0.5f);
+                slideRightViper.setPower(-0.5f);
+            } else if (i < 0) {
+                slideLeftViper.setPower(-0.5f);
+                slideRightViper.setPower(0.5f);
+            } else {
+                slideLeftViper.setPower(0f);
+                slideRightViper.setPower(0f);
+            }
+            
+            
+            
             
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.update();

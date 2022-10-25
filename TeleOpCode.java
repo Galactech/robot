@@ -169,14 +169,15 @@ public class TeleOpCode2 extends LinearOpMode {
                 leftArm.setPosition(0f);
                 sleep(200);
                 //clawSpin.setPosition(0.72);
-                armBase.setPower(-0.80f*powerScale);
-                sleep(520);
-                armBase.setPower(-0.66f*powerScale);
+                armBase.setPower(-0.80*powerScale);
+                sleep(375);
+                armBase.setPower(-0.35*powerScale);
                 sleep(300);
-                rightArm.setPosition(0.80f);
-                leftArm.setPosition(0.20f);
-                armBase.setPower(-0.66f*powerScale);
+                rightArm.setPosition(0.70f);
+                leftArm.setPosition(0.30f);
+                armBase.setPower(-0.35f*powerScale);
                 sleep(2000);
+                //claw.setPosition(0.60);
                 basePositionFunction();
                 armBase.setPower(-0.2f*powerScale);
                 sleep(1000);
@@ -189,14 +190,17 @@ public class TeleOpCode2 extends LinearOpMode {
                 leftArm.setPosition(0f);
                 sleep(200);
                 //clawSpin.setPosition(0.72);
-                armBase.setPower(-0.85f*powerScale);
-                sleep(690);
-                armBase.setPower(-0.72f*powerScale);
-                sleep(300);
+                armBase.setPower(-0.80f*powerScale);
+                sleep(360);
                 rightArm.setPosition(0.4f);
                 leftArm.setPosition(0.6f);
-                armBase.setPower(-0.72*powerScale);
-                sleep(2000);
+                armBase.setPower(-0.8f*powerScale);
+                sleep(270);
+                armBase.setPower(-0.45*powerScale);
+                sleep(1000);
+                claw.setPosition(0.60);
+                armBase.setPower(-0.45f*powerScale);
+                sleep(1500);
                 basePositionFunction();
                 armBase.setPower(-0.2f*powerScale);
                 sleep(1000);
@@ -205,37 +209,91 @@ public class TeleOpCode2 extends LinearOpMode {
             }
             
             if (thirdLevelFront){
-                rightArm.setPosition(0.4);
-                leftArm.setPosition(0.6);
+                rightArm.setPosition(1f);
+                leftArm.setPosition(0f);
+                sleep(130);
                 //clawSpin.setPosition(0.72);
-                //armBase.setPower(-1f*powerScale);
-                //sleep(1300);
-                //armBase.setPower(0f*powerScale);
-                //sleep(3000);
+                armBase.setPower(-0.80f*powerScale);
+                sleep(450);
+                rightArm.setPosition(0.3f);
+                leftArm.setPosition(0.7f);
+                armBase.setPower(-0.80f*powerScale);
+                sleep(450);
+                armBase.setPower(-0.35f*powerScale);
+                sleep(500);
+                claw.setPosition(0.60);
+                armBase.setPower(-0.45f*powerScale);
+                sleep(2500);
+                basePositionFunction();
+                armBase.setPower(-0.20f*powerScale);
+                sleep(1000);
+                armBase.setPower(0f*powerScale);
+                sleep(2000);
             }
             
             if (firstLevelBack){
-                rightArm.setPosition(0.9);
-                leftArm.setPosition(0.1);
-                //clawSpin.setPosition(0.07);
-                //armBase.setPower(-1f*powerScale);
-                //sleep(1500);
-                //armBase.setPower(0.5*powerScale);
-                //sleep(2000);
-                //armBase.setPower(0f*powerScale);
-                //sleep(2000);
+                rightArm.setPosition(1f);
+                leftArm.setPosition(0f);
+                sleep(130);
+                armBase.setPower(-0.80f*powerScale);
+                sleep(500);
+                rightArm.setPosition(0.7f);
+                leftArm.setPosition(0.3f);
+                armBase.setPower(-0.80f*powerScale);
+                sleep(700);
+                clawSpin.setPosition(0.72);
+                armBase.setPower(0.45f*powerScale);
+                sleep(500);
+                claw.setPosition(0.60);
+                armBase.setPower(0.45f*powerScale);
+                sleep(2500);
+                basePositionFunction();
+                armBase.setPower(1f*powerScale);
+                sleep(700);
+                armBase.setPower(-0.3f*powerScale);
+                sleep(1000);
+                armBase.setPower(0f*powerScale);
+                sleep(2000);
             }
             
             if (secondLevelBack){
-                rightArm.setPosition(0.5);
-                leftArm.setPosition(0.5);
+                rightArm.setPosition(1f);
+                leftArm.setPosition(0f);
+                sleep(200);
                 clawSpin.setPosition(0.07);
+                armBase.setPower(-0.85f*powerScale);
+                sleep(500);
+                armBase.setPower(-0.65f*powerScale);
+                sleep(300);
+                rightArm.setPosition(0.4f);
+                leftArm.setPosition(0.6f);
+                armBase.setPower(-0.65*powerScale);
+                sleep(2000);
+                basePositionFunction();
+                armBase.setPower(-0.2f*powerScale);
+                sleep(1000);
+                armBase.setPower(0f*powerScale);
+                sleep(2000);
             }
             
             if (thirdLevelBack){
-                rightArm.setPosition(0.4);
-                leftArm.setPosition(0.4);
+                rightArm.setPosition(1f);
+                leftArm.setPosition(0f);
+                sleep(200);
                 clawSpin.setPosition(0.07);
+                armBase.setPower(-0.85f*powerScale);
+                sleep(500);
+                armBase.setPower(-0.65f*powerScale);
+                sleep(300);
+                rightArm.setPosition(0.4f);
+                leftArm.setPosition(0.6f);
+                armBase.setPower(-0.65*powerScale);
+                sleep(2000);
+                basePositionFunction();
+                armBase.setPower(-0.2f*powerScale);
+                sleep(1000);
+                armBase.setPower(0f*powerScale);
+                sleep(2000);
             }
             
             

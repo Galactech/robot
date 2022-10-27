@@ -1,6 +1,4 @@
-
 package org.firstinspires.ftc.teamcode;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -23,9 +21,9 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Linear OpMode2", group="Linear Opmode")
+@TeleOp(name="Basic: Linear OpMode3", group="Linear Opmode")
 
-public class TeleOpCode2 extends LinearOpMode {
+public class TeleOpCode3 extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -56,7 +54,7 @@ public class TeleOpCode2 extends LinearOpMode {
 
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
-        // step (using the FTC Robot Controller app on the phone).
+        // step (using the FTC Robot Controller app on the phone)
         frontLeftDrive  = hardwareMap.get(DcMotor.class, "Frontleft");
         frontRightDrive = hardwareMap.get(DcMotor.class, "Frontright");
         backLeftDrive  = hardwareMap.get(DcMotor.class, "Backleft");
@@ -92,35 +90,35 @@ public class TeleOpCode2 extends LinearOpMode {
             double y = -gamepad1.left_stick_y;
             //double x = -gamepad1.left_stick_x;
             double turn  =  gamepad1.right_stick_x;
+            double armMovement = -gamepad2.left_stick_y;
+            double armHold = -gamepad2.right_stick_y;
             
-            boolean clawButtonClose = gamepad2.left_bumper;
-            boolean clawButtonOpen = gamepad2.right_bumper;
-            
-            boolean basePosition = gamepad2.a;
-            boolean firstLevelFront = gamepad2.x;
-            boolean secondLevelFront = gamepad2.y;
-            boolean thirdLevelFront = gamepad2.b;
-            boolean firstLevelBack = gamepad2.dpad_left;
-            boolean secondLevelBack = gamepad2.dpad_up;
-            boolean thirdLevelBack = gamepad2.dpad_right;
-            
-            
-            
+            boolean clawButtonClose = gamepad2.right_bumper;
+            boolean clawButtonOpen = gamepad2.left_bumper;
+
+            boolean elbowCompact = gamepad2.dpad_down;
+            boolean elbowRest = gamepad2.a;
+            boolean elbowFirstLevelFront = gamepad2.x;
+            boolean elbowSecondLevelFront = gamepad2.y;
+            boolean elbowThirdLevelFront = gamepad2.b;
+            boolean elbowThirdLevelBack = gamepad2.dpad_up;
+
             double frontLeftPower = 0;
             double frontRightPower = 0;
             double backLeftPower = 0;
             double backRightPower = 0;
-            
+
+            double armPower = 0;
             double armBasePower = 0;
             
             if(y>0){
                 backRightPower = 0.6;
-                frontLeftPower = 0.58;
+                frontLeftPower = 0.59;
                 frontRightPower = 0.6;
                 backLeftPower = 0.6;
             } else if(y<0){
                 backRightPower = -0.6;
-                frontLeftPower = -0.58;
+                frontLeftPower = -0.59;
                 frontRightPower = -0.6;
                 backLeftPower = -0.6;
             } 
@@ -140,16 +138,16 @@ public class TeleOpCode2 extends LinearOpMode {
             }
             
             if(turn>0){
-                backRightPower = -0.6;
-                frontLeftPower = 0.6;
-                frontRightPower = -0.6;
-                backLeftPower = 0.6;
+                backRightPower = -0.35;
+                frontLeftPower = 0.35;
+                frontRightPower = -0.35;
+                backLeftPower = 0.35;
                 
             } else if(turn<0){
-                backRightPower = 0.6;
-                frontLeftPower = -0.6;
-                frontRightPower = 0.6;
-                backLeftPower = -0.6;
+                backRightPower = 0.35;
+                frontLeftPower = -0.35;
+                frontRightPower = 0.35;
+                backLeftPower = -0.35;
             }
             
             if(clawButtonClose) {
@@ -160,142 +158,59 @@ public class TeleOpCode2 extends LinearOpMode {
                 claw.setPosition(0.60);
             }
             
-            if (basePosition){
-                basePositionFunction();
+            if (armMovement > 0){
+                armBasePower = -0.72;
+                if (armHold > 0) {
+                    armBasePower = -0.65;
+                }
+            } else if(armMovement < 0) {
+                armBasePower = 0.4;
+            }else{
+                armBasePower = -0.20;
+            }
+
+            if (elbowCompact){
+                rightArm.setPosition(1);
+                leftArm.setPosition(0);
+            }
+
+            if (elbowRest){
+                rightArm.setPosition(0.73);
+                leftArm.setPosition(0.27);
+                clawSpin.setPosition(0.07);
             }
             
-            if (firstLevelFront){
-                rightArm.setPosition(1f);
-                leftArm.setPosition(0f);
-                sleep(200);
-                //clawSpin.setPosition(0.72);
-                armBase.setPower(-0.80*powerScale);
-                sleep(375);
-                armBase.setPower(-0.35*powerScale);
-                sleep(300);
-                rightArm.setPosition(0.70f);
-                leftArm.setPosition(0.30f);
-                armBase.setPower(-0.35f*powerScale);
-                sleep(2000);
-                //claw.setPosition(0.60);
-                basePositionFunction();
-                armBase.setPower(-0.2f*powerScale);
-                sleep(1000);
-                armBase.setPower(0f*powerScale);
-                sleep(2000);
+            if (elbowFirstLevelFront){
+                rightArm.setPosition(0.6);
+                leftArm.setPosition(0.4);
+                clawSpin.setPosition(0.07);
             }
             
-            if (secondLevelFront){
-                rightArm.setPosition(1f);
-                leftArm.setPosition(0f);
-                sleep(200);
-                //clawSpin.setPosition(0.72);
-                armBase.setPower(-0.80f*powerScale);
-                sleep(360);
-                rightArm.setPosition(0.4f);
-                leftArm.setPosition(0.6f);
-                armBase.setPower(-0.8f*powerScale);
-                sleep(270);
-                armBase.setPower(-0.45*powerScale);
-                sleep(1000);
-                claw.setPosition(0.60);
-                armBase.setPower(-0.45f*powerScale);
-                sleep(1500);
-                basePositionFunction();
-                armBase.setPower(-0.2f*powerScale);
-                sleep(1000);
-                armBase.setPower(0f*powerScale);
-                sleep(2000);
+            if (elbowSecondLevelFront){
+                rightArm.setPosition(0.4);
+                leftArm.setPosition(0.6);
+                clawSpin.setPosition(0.07);
             }
             
-            if (thirdLevelFront){
-                rightArm.setPosition(1f);
-                leftArm.setPosition(0f);
-                sleep(130);
-                //clawSpin.setPosition(0.72);
-                armBase.setPower(-0.80f*powerScale);
-                sleep(450);
-                rightArm.setPosition(0.3f);
-                leftArm.setPosition(0.7f);
-                armBase.setPower(-0.80f*powerScale);
-                sleep(450);
-                armBase.setPower(-0.35f*powerScale);
-                sleep(500);
-                claw.setPosition(0.60);
-                armBase.setPower(-0.45f*powerScale);
-                sleep(2500);
-                basePositionFunction();
-                armBase.setPower(-0.20f*powerScale);
-                sleep(1000);
-                armBase.setPower(0f*powerScale);
-                sleep(2000);
+            if (elbowThirdLevelFront){
+                rightArm.setPosition(0.2);
+                leftArm.setPosition(0.8);
+                clawSpin.setPosition(0.07);
             }
             
-            if (firstLevelBack){
-                rightArm.setPosition(1f);
-                leftArm.setPosition(0f);
-                sleep(130);
-                armBase.setPower(-0.80f*powerScale);
-                sleep(500);
-                rightArm.setPosition(0.7f);
-                leftArm.setPosition(0.3f);
-                armBase.setPower(-0.80f*powerScale);
-                sleep(700);
+            if (elbowThirdLevelBack){
                 clawSpin.setPosition(0.72);
-                armBase.setPower(0.45f*powerScale);
-                sleep(500);
-                claw.setPosition(0.60);
-                armBase.setPower(0.45f*powerScale);
-                sleep(2500);
-                basePositionFunction();
-                armBase.setPower(1f*powerScale);
-                sleep(700);
-                armBase.setPower(-0.3f*powerScale);
-                sleep(1000);
-                armBase.setPower(0f*powerScale);
-                sleep(2000);
+                rightArm.setPosition(0.6);
+                leftArm.setPosition(0.4);
             }
-            
-            if (secondLevelBack){
-                rightArm.setPosition(1f);
-                leftArm.setPosition(0f);
-                sleep(200);
+
+            /*if (spinUp){
                 clawSpin.setPosition(0.07);
-                armBase.setPower(-0.85f*powerScale);
-                sleep(500);
-                armBase.setPower(-0.65f*powerScale);
-                sleep(300);
-                rightArm.setPosition(0.4f);
-                leftArm.setPosition(0.6f);
-                armBase.setPower(-0.65*powerScale);
-                sleep(2000);
-                basePositionFunction();
-                armBase.setPower(-0.2f*powerScale);
-                sleep(1000);
-                armBase.setPower(0f*powerScale);
-                sleep(2000);
             }
-            
-            if (thirdLevelBack){
-                rightArm.setPosition(1f);
-                leftArm.setPosition(0f);
-                sleep(200);
-                clawSpin.setPosition(0.07);
-                armBase.setPower(-0.85f*powerScale);
-                sleep(500);
-                armBase.setPower(-0.65f*powerScale);
-                sleep(300);
-                rightArm.setPosition(0.4f);
-                leftArm.setPosition(0.6f);
-                armBase.setPower(-0.65*powerScale);
-                sleep(2000);
-                basePositionFunction();
-                armBase.setPower(-0.2f*powerScale);
-                sleep(1000);
-                armBase.setPower(0f*powerScale);
-                sleep(2000);
-            }
-            
+
+            if (spinDown){
+                clawSpin.setPosition(0.72);
+            }*/
             
             frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -309,7 +224,7 @@ public class TeleOpCode2 extends LinearOpMode {
             backLeftDrive.setPower(backLeftPower);
             backRightDrive.setPower(backRightPower);
             
-            //armBase.setPower(armBasePower);
+            armBase.setPower(armBasePower);
 
             // Show the elapsed game time and wheel power.
             //telemetry.addData("Status", "Run Time: " + runtime.toString());

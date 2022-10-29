@@ -102,6 +102,11 @@ public class TeleOpCode3 extends LinearOpMode {
             boolean elbowSecondLevelFront = gamepad2.y;
             boolean elbowThirdLevelFront = gamepad2.b;
             boolean elbowThirdLevelBack = gamepad2.dpad_up;
+            
+            boolean slightForward = gamepad1.dpad_up;
+            boolean slightBackward = gamepad1.dpad_down;
+            boolean slightRight = gamepad1.dpad_right;
+            boolean slightLeft = gamepad1.dpad_left;
 
             double frontLeftPower = 0;
             double frontRightPower = 0;
@@ -121,6 +126,30 @@ public class TeleOpCode3 extends LinearOpMode {
                 frontLeftPower = -0.59;
                 frontRightPower = -0.6;
                 backLeftPower = -0.6;
+            } 
+            
+            if(slightForward){
+                backRightPower = 0.3;
+                frontLeftPower = 0.3;
+                frontRightPower = 0.3;
+                backLeftPower = 0.3;
+            } else if(slightBackward){
+                backRightPower = -0.3;
+                frontLeftPower = -0.3;
+                frontRightPower = -0.3;
+                backLeftPower = -0.3;
+            } 
+            
+            if(slightRight){
+                backRightPower = 0.35;
+                frontLeftPower = 0.35;
+                frontRightPower = -0.35;
+                backLeftPower = -0.35;
+            } else if(slightLeft){
+                backRightPower = -0.35;
+                frontLeftPower = -0.35;
+                frontRightPower = 0.35;
+                backLeftPower = 0.35;
             } 
             
             if(gamepad1.x){
@@ -151,7 +180,7 @@ public class TeleOpCode3 extends LinearOpMode {
             }
             
             if(clawButtonClose) {
-                claw.setPosition(0.85);
+                claw.setPosition(0.90);
             }
             
             if(clawButtonOpen) {
@@ -159,14 +188,14 @@ public class TeleOpCode3 extends LinearOpMode {
             }
             
             if (armMovement > 0){
-                armBasePower = -0.72;
+                armBasePower = -0.74;
                 if (armHold > 0) {
                     armBasePower = -0.65;
                 }
             } else if(armMovement < 0) {
-                armBasePower = 0.4;
+                armBasePower = 0.5;
             }else{
-                armBasePower = -0.20;
+                armBasePower = -0.2;
             }
 
             if (elbowCompact){
@@ -177,33 +206,34 @@ public class TeleOpCode3 extends LinearOpMode {
             if (elbowRest){
                 rightArm.setPosition(0.73);
                 leftArm.setPosition(0.27);
-                clawSpin.setPosition(0.07);
+                clawSpin.setPosition(0.72);
             }
             
             if (elbowFirstLevelFront){
                 rightArm.setPosition(0.6);
                 leftArm.setPosition(0.4);
-                clawSpin.setPosition(0.07);
+                clawSpin.setPosition(0.72);
             }
             
             if (elbowSecondLevelFront){
                 rightArm.setPosition(0.4);
                 leftArm.setPosition(0.6);
-                clawSpin.setPosition(0.07);
+                clawSpin.setPosition(0.72);
             }
             
             if (elbowThirdLevelFront){
                 rightArm.setPosition(0.2);
                 leftArm.setPosition(0.8);
-                clawSpin.setPosition(0.07);
+                clawSpin.setPosition(0.72);
             }
             
             if (elbowThirdLevelBack){
-                clawSpin.setPosition(0.72);
+                clawSpin.setPosition(0.07);
                 rightArm.setPosition(0.6);
                 leftArm.setPosition(0.4);
             }
-
+            
+            
             /*if (spinUp){
                 clawSpin.setPosition(0.07);
             }

@@ -147,6 +147,11 @@ public class TensorTest extends LinearOpMode {
         backRightDrive.setDirection(DcMotorSimple.Direction.FORWARD);
         backLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         
+        claw.setPosition(0.90);
+        rightArm.setPosition(1);
+        leftArm.setPosition(0);
+        clawSpin.setPosition(0.07);
+        
         frontLeftPos = 0;
         frontRightPos = 0;
         backLeftPos = 0;
@@ -203,33 +208,30 @@ public class TensorTest extends LinearOpMode {
                             telemetry.addData("- Position (Row/Col)","%.0f / %.0f", row, col);
                             telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
                             
-                            claw.setPosition(0.90);
-                            rightArm.setPosition(1);
-                            leftArm.setPosition(0);
-                            clawSpin.setPosition(0.07);
-                            
                             if (recognition.getLabel().equals("Pink")) {
-                                drive(1, 1, 1, 1, 0.25);
-                                sleep(200);
-                                drive(600, -600, -600, 600, 0.25);
+                                drive(10, 10, 10, 10, 0.25);
                                 sleep(500);
-                                drive(560, 560, 560, 560, 0.25);
+                                drive(550, -550, -550, 550, 0.25);
+                                sleep(750);
+                                drive(570, 570, 570, 570, 0.25);
                                 sleep(500);
                             }
                             
                             if (recognition.getLabel().equals("blue")) {
-                                drive(1, 1, 1, 1, 0.25);
-                                sleep(200);
-                                drive(-540, 540, 540, -540, 0.25);
+                                drive(15, 15, 15, 15, 0.25);
+                                sleep(600);
+                                drive(-590, 590, 590, -580, 0.25);
                                 sleep(750);
-                                drive(600, 600, 600, 600, 0.25);
+                                drive(610, 610, 610, 610, 0.25);
                                 sleep(500);
                             }
                             
                             if (recognition.getLabel().equals("orange")) {
+                                drive(10, 10, 10, 10, 0.25);
+                                sleep(300);
                                 drive(40, -40, -40, 40, 0.25);
-                                sleep(500);
-                                drive(585, 585, 585, 585, 0.25);
+                                sleep(700);
+                                drive(575, 575, 575, 575, 0.25);
                             }
                         }
                         telemetry.update();
@@ -262,7 +264,7 @@ public class TensorTest extends LinearOpMode {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
             "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = 0.65f;
+        tfodParameters.minResultConfidence = 0.7f;
         tfodParameters.isModelTensorFlow2 = true;
         tfodParameters.inputSize = 300;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);

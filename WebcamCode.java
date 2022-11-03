@@ -30,6 +30,9 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -50,9 +53,29 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@Autonomous(name = "Concept: TensorFlow Object Detection Webcam", group = "Concept")
 
-public class WebcamImageDetection extends LinearOpMode {
+@Autonomous(name = "TensorTest")
+
+public class TensorTest extends LinearOpMode {
+    
+    private DcMotor frontLeftDrive = null;
+    private DcMotor frontRightDrive = null;
+    private DcMotor backLeftDrive = null;
+    private DcMotor backRightDrive = null;
+    
+    private DcMotor armBase = null;
+    
+    private Servo claw = null;
+    private Servo clawSpin = null;
+    private Servo leftArm = null;
+    private Servo rightArm = null;
+    
+    private int frontLeftPos;
+    private int frontRightPos;
+    private int backLeftPos;
+    private int backRightPos;
+    
+    private int armPos;
 
     /*
      * Specify the source for the Tensor Flow Model.
@@ -61,14 +84,14 @@ public class WebcamImageDetection extends LinearOpMode {
      * has been downloaded to the Robot Controller's SD FLASH memory, it must to be loaded using loadModelFromFile()
      * Here we assume it's an Asset.    Also see method initTfod() below .
      */
-    private static final String TFOD_MODEL_ASSET = "PowerPlay.tflite";
+    private static final String TFOD_MODEL_ASSET = "model_20221101_175809.tflite";
     // private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
 
 
     private static final String[] LABELS = {
-            "1 Bolt",
-            "2 Bulb",
-            "3 Panel"
+            "Pink",
+            "blue",
+            "orange"
     };
 
     /*
@@ -84,7 +107,7 @@ public class WebcamImageDetection extends LinearOpMode {
      * and paste it in to your code on the next line, between the double quotes.
      */
     private static final String VUFORIA_KEY =
-            " -- YOUR NEW VUFORIA KEY GOES HERE  --- ";
+            "ATzl1fr/////AAABmfX4/a94rUj3ouzIGP3Vqxk9yGyZvy+HYxTFoqsMbAxX1+CIwLU2+refuksPU/5L2otwxB3PqLFRGVqklWHqIJtthvU74FI6EZnXyxEjS2fZRLBAG2ZIndEUvoisTiNs1dPi5MlM3GKIx38EA9l7cer8adOKBWHN/ER1TZSO/J6neFPGLPkCGJUCIVHsOzU43JujKmT1owQ1c1NBX3h3FCUYzw1EXG2wY8DVS37sxYrse6tb2xI6oLfbuNZuNM0B6rG85uMTclewXBiERZytNQkcUt7ZBTnHCyrkQaRmTqXfIidccXn63paKwGEuIceCdLzPxhHZ5lf8KoXiuzFHcjfqqkRHhJdI3BDMDrnyyLOh";
 
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
@@ -100,6 +123,38 @@ public class WebcamImageDetection extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        
+        
+        frontLeftDrive  = hardwareMap.get(DcMotor.class, "Frontleft");
+        frontRightDrive = hardwareMap.get(DcMotor.class, "Frontright");
+        backLeftDrive  = hardwareMap.get(DcMotor.class, "Backleft");
+        backRightDrive = hardwareMap.get(DcMotor.class, "Backright");
+        
+        armBase  = hardwareMap.get(DcMotor.class, "armbase");
+        
+        claw  = hardwareMap.get(Servo.class, "claw");
+        clawSpin = hardwareMap.get(Servo.class, "clawspin");
+        leftArm  = hardwareMap.get(Servo.class, "leftarm");
+        rightArm = hardwareMap.get(Servo.class, "rightarm");
+        
+        frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        
+        frontLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontRightDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+        backRightDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+        backLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        
+        frontLeftPos = 0;
+        frontRightPos = 0;
+        backLeftPos = 0;
+        backRightPos = 0;
+        armPos = 0;
+        
+        waitForStart();
+        
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
         initVuforia();
@@ -118,7 +173,7 @@ public class WebcamImageDetection extends LinearOpMode {
             // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
             // should be set to the value of the images used to create the TensorFlow Object Detection model
             // (typically 16/9).
-            tfod.setZoom(1.0, 16.0/9.0);
+            tfod.setZoom(1.5, 16.0/9.0);
         }
 
         /** Wait for the game to begin */
@@ -147,6 +202,35 @@ public class WebcamImageDetection extends LinearOpMode {
                             telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100 );
                             telemetry.addData("- Position (Row/Col)","%.0f / %.0f", row, col);
                             telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
+                            
+                            claw.setPosition(0.90);
+                            rightArm.setPosition(1);
+                            leftArm.setPosition(0);
+                            clawSpin.setPosition(0.07);
+                            
+                            if (recognition.getLabel().equals("Pink")) {
+                                drive(1, 1, 1, 1, 0.25);
+                                sleep(200);
+                                drive(600, -600, -600, 600, 0.25);
+                                sleep(500);
+                                drive(560, 560, 560, 560, 0.25);
+                                sleep(500);
+                            }
+                            
+                            if (recognition.getLabel().equals("blue")) {
+                                drive(1, 1, 1, 1, 0.25);
+                                sleep(200);
+                                drive(-540, 540, 540, -540, 0.25);
+                                sleep(750);
+                                drive(600, 600, 600, 600, 0.25);
+                                sleep(500);
+                            }
+                            
+                            if (recognition.getLabel().equals("orange")) {
+                                drive(40, -40, -40, 40, 0.25);
+                                sleep(500);
+                                drive(585, 585, 585, 585, 0.25);
+                            }
                         }
                         telemetry.update();
                     }
@@ -178,14 +262,40 @@ public class WebcamImageDetection extends LinearOpMode {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
             "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = 0.75f;
+        tfodParameters.minResultConfidence = 0.65f;
         tfodParameters.isModelTensorFlow2 = true;
         tfodParameters.inputSize = 300;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
 
         // Use loadModelFromAsset() if the TF Model is built in as an asset by Android Studio
         // Use loadModelFromFile() if you have downloaded a custom team model to the Robot Controller's FLASH.
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
-        // tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS);
+        //tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
+        tfod.loadModelFromFile(TFOD_MODEL_ASSET, LABELS);
+    }
+    
+    private void drive(int frontLeftTarget, int frontRightTarget, int backLeftTarget, int backRightTarget, double speed) {
+        frontLeftPos += frontLeftTarget;
+        frontRightPos += frontRightTarget;
+        backLeftPos += backLeftTarget;
+        backRightPos += backRightTarget;
+        
+        frontLeftDrive.setTargetPosition(frontLeftPos);
+        frontRightDrive.setTargetPosition(frontRightPos);
+        backLeftDrive.setTargetPosition(backLeftPos);
+        backRightDrive.setTargetPosition(backRightPos);
+        
+        frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        
+        frontLeftDrive.setPower(speed);
+        frontRightDrive.setPower(speed);
+        backLeftDrive.setPower(speed);
+        backRightDrive.setPower(speed);
+        
+        while(opModeIsActive() && frontLeftDrive.isBusy() && frontRightDrive.isBusy() && backLeftDrive.isBusy() && backRightDrive.isBusy()) {
+            idle();
+        }
     }
 }

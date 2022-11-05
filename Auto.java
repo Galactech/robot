@@ -54,7 +54,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  * is explained below.
  */
 
-@Autonomous(name = "TensorTest")
+@Autonomous(name = "Auto")
 
 public class TensorTest extends LinearOpMode {
     
@@ -84,14 +84,14 @@ public class TensorTest extends LinearOpMode {
      * has been downloaded to the Robot Controller's SD FLASH memory, it must to be loaded using loadModelFromFile()
      * Here we assume it's an Asset.    Also see method initTfod() below .
      */
-    private static final String TFOD_MODEL_ASSET = "model_20221101_175809.tflite";
+    private static final String TFOD_MODEL_FILE = "model_20221104_233054.tflite";
     // private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
 
 
     private static final String[] LABELS = {
-            "Pink",
-            "blue",
-            "orange"
+            "purpleTag",
+            "greenTag",
+            "whiteTag"
     };
 
     /*
@@ -147,10 +147,10 @@ public class TensorTest extends LinearOpMode {
         backRightDrive.setDirection(DcMotorSimple.Direction.FORWARD);
         backLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         
-        claw.setPosition(0.90);
+        claw.setPosition(0.85);
         rightArm.setPosition(1);
         leftArm.setPosition(0);
-        clawSpin.setPosition(0.07);
+        clawSpin.setPosition(0.72);
         
         frontLeftPos = 0;
         frontRightPos = 0;
@@ -178,14 +178,13 @@ public class TensorTest extends LinearOpMode {
             // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
             // should be set to the value of the images used to create the TensorFlow Object Detection model
             // (typically 16/9).
-            tfod.setZoom(1.5, 16.0/9.0);
+            //tfod.setZoom(1.0, 16.0/9.0);
         }
 
         /** Wait for the game to begin */
         telemetry.addData(">", "Press Play to start op mode");
         telemetry.update();
         waitForStart();
-
         if (opModeIsActive()) {
             while (opModeIsActive()) {
                 if (tfod != null) {
@@ -208,30 +207,45 @@ public class TensorTest extends LinearOpMode {
                             telemetry.addData("- Position (Row/Col)","%.0f / %.0f", row, col);
                             telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
                             
-                            if (recognition.getLabel().equals("Pink")) {
-                                drive(10, 10, 10, 10, 0.25);
+                            if (recognition.getLabel().equals("whiteTag")) {
+                                drive(1, 1, 1, 1, 0.25);
                                 sleep(500);
-                                drive(550, -550, -550, 550, 0.25);
-                                sleep(750);
-                                drive(570, 570, 570, 570, 0.25);
+                                drive(680, -680, -680, 680, 0.2);
+                                sleep(1000);
+                                drive(590, 590, 590, 590, 0.25);
                                 sleep(500);
+                                rightArm.setPosition(0.78);
+                                leftArm.setPosition(0.22);
+                                clawSpin.setPosition(0.07);
+                                sleep(500);
+                                break;
                             }
                             
-                            if (recognition.getLabel().equals("blue")) {
+                            if (recognition.getLabel().equals("greenTag")) {
                                 drive(15, 15, 15, 15, 0.25);
-                                sleep(600);
-                                drive(-590, 590, 590, -580, 0.25);
-                                sleep(750);
-                                drive(610, 610, 610, 610, 0.25);
                                 sleep(500);
+                                drive(-540, 540, 540, -540, 0.2);
+                                sleep(800);
+                                drive(590, 590, 590, 590, 0.25);
+                                sleep(500);
+                                rightArm.setPosition(0.78);
+                                leftArm.setPosition(0.22);
+                                clawSpin.setPosition(0.07);
+                                sleep(500);
+                                break;
                             }
                             
-                            if (recognition.getLabel().equals("orange")) {
+                            if (recognition.getLabel().equals("purpleTag")) {
                                 drive(10, 10, 10, 10, 0.25);
                                 sleep(300);
                                 drive(40, -40, -40, 40, 0.25);
                                 sleep(700);
-                                drive(575, 575, 575, 575, 0.25);
+                                drive(570, 570, 570, 570, 0.25);
+                                rightArm.setPosition(0.78);
+                                leftArm.setPosition(0.22);
+                                clawSpin.setPosition(0.07);
+                                sleep(500);
+                                break;
                             }
                         }
                         telemetry.update();
@@ -272,7 +286,7 @@ public class TensorTest extends LinearOpMode {
         // Use loadModelFromAsset() if the TF Model is built in as an asset by Android Studio
         // Use loadModelFromFile() if you have downloaded a custom team model to the Robot Controller's FLASH.
         //tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
-        tfod.loadModelFromFile(TFOD_MODEL_ASSET, LABELS);
+        tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS);
     }
     
     private void drive(int frontLeftTarget, int frontRightTarget, int backLeftTarget, int backRightTarget, double speed) {

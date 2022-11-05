@@ -54,9 +54,9 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  * is explained below.
  */
 
-@Autonomous(name = "Auto")
+@Autonomous(name = "AutoLeft")
 
-public class TensorTest extends LinearOpMode {
+public class AutoLeft extends LinearOpMode {
     
     private DcMotor frontLeftDrive = null;
     private DcMotor frontRightDrive = null;
@@ -150,13 +150,15 @@ public class TensorTest extends LinearOpMode {
         claw.setPosition(0.85);
         rightArm.setPosition(1);
         leftArm.setPosition(0);
-        clawSpin.setPosition(0.72);
+        clawSpin.setPosition(0.07);
         
         frontLeftPos = 0;
         frontRightPos = 0;
         backLeftPos = 0;
         backRightPos = 0;
         armPos = 0;
+        
+        double armBasePower = 0;
         
         waitForStart();
         
@@ -178,7 +180,7 @@ public class TensorTest extends LinearOpMode {
             // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
             // should be set to the value of the images used to create the TensorFlow Object Detection model
             // (typically 16/9).
-            //tfod.setZoom(1.0, 16.0/9.0);
+            tfod.setZoom(2.0, 16.0/9.0);
         }
 
         /** Wait for the game to begin */
@@ -207,6 +209,25 @@ public class TensorTest extends LinearOpMode {
                             telemetry.addData("- Position (Row/Col)","%.0f / %.0f", row, col);
                             telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
                             
+                            //first drop
+                            drive(70, 70, 70, 70, 0.25);
+                            sleep(500);
+                            drive(-220, 220, 220, -220, 0.25);
+                            sleep(500);
+                            rightArm.setPosition(0.85);
+                            leftArm.setPosition(0.15);
+                            clawSpin.setPosition(0.07);
+                            sleep(1000);
+                            claw.setPosition(0.6);
+                            //back to original position
+                            rightArm.setPosition(1);
+                            leftArm.setPosition(0);
+                            sleep(500);
+                            drive(220, -220, -220, 220, 0.25);
+                            sleep(500);
+                            drive(-70, -70, -70, -70, 0.25);
+                            //parking
+                            telemetry.addData("Work", "working");
                             if (recognition.getLabel().equals("whiteTag")) {
                                 drive(1, 1, 1, 1, 0.25);
                                 sleep(500);
@@ -214,23 +235,21 @@ public class TensorTest extends LinearOpMode {
                                 sleep(1000);
                                 drive(590, 590, 590, 590, 0.25);
                                 sleep(500);
-                                rightArm.setPosition(0.78);
-                                leftArm.setPosition(0.22);
-                                clawSpin.setPosition(0.07);
+                                /*rightArm.setPosition(0.78);
+                                leftArm.setPosition(0.22);*/
                                 sleep(500);
                                 break;
                             }
                             
                             if (recognition.getLabel().equals("greenTag")) {
-                                drive(15, 15, 15, 15, 0.25);
+                                drive(1, 1, 1, 1, 0.25);
                                 sleep(500);
                                 drive(-540, 540, 540, -540, 0.2);
                                 sleep(800);
-                                drive(590, 590, 590, 590, 0.25);
+                                drive(605, 605, 605, 605, 0.25);
                                 sleep(500);
-                                rightArm.setPosition(0.78);
-                                leftArm.setPosition(0.22);
-                                clawSpin.setPosition(0.07);
+                                /*rightArm.setPosition(0.78);
+                                leftArm.setPosition(0.22);*/
                                 sleep(500);
                                 break;
                             }
@@ -241,14 +260,18 @@ public class TensorTest extends LinearOpMode {
                                 drive(40, -40, -40, 40, 0.25);
                                 sleep(700);
                                 drive(570, 570, 570, 570, 0.25);
+                                /*armBasePower = -0.5;
+                                sleep(400);
+                                armBasePower = 0;
                                 rightArm.setPosition(0.78);
-                                leftArm.setPosition(0.22);
-                                clawSpin.setPosition(0.07);
-                                sleep(500);
+                                leftArm.setPosition(0.22);*/
+                                sleep(1000);
                                 break;
                             }
+                        telemetry.update();    
+                        armBase.setPower(armBasePower);
+                        break;
                         }
-                        telemetry.update();
                     }
                 }
             }
@@ -278,7 +301,7 @@ public class TensorTest extends LinearOpMode {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
             "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = 0.7f;
+        tfodParameters.minResultConfidence = 0.6f;
         tfodParameters.isModelTensorFlow2 = true;
         tfodParameters.inputSize = 300;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);

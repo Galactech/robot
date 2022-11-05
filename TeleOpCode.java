@@ -21,9 +21,9 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Linear OpMode3", group="Linear Opmode")
+@TeleOp(name="TeleOp", group="Linear Opmode")
 
-public class TeleOpCode3 extends LinearOpMode {
+public class TelOpCode extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -99,8 +99,6 @@ public class TeleOpCode3 extends LinearOpMode {
             boolean elbowCompact = gamepad2.dpad_down;
             boolean elbowRest = gamepad2.a;
             boolean elbowFirstLevelFront = gamepad2.x;
-            boolean elbowSecondLevelFront = gamepad2.y;
-            boolean elbowThirdLevelFront = gamepad2.b;
             boolean elbowThirdLevelBack = gamepad2.dpad_up;
             boolean elbowSecondLevelBack = gamepad2.dpad_right;
             
@@ -200,7 +198,7 @@ public class TeleOpCode3 extends LinearOpMode {
             }
             
             if(clawButtonOpen) {
-                claw.setPosition(0.60);
+                claw.setPosition(0.50);
             }
             
             if (armMovement > 0){
@@ -228,18 +226,6 @@ public class TeleOpCode3 extends LinearOpMode {
             if (elbowFirstLevelFront){
                 rightArm.setPosition(0.80);
                 leftArm.setPosition(0.20);
-                clawSpin.setPosition(0.07);
-            }
-            
-            if (elbowSecondLevelFront){
-                rightArm.setPosition(0.45);
-                leftArm.setPosition(0.55);
-                clawSpin.setPosition(0.07);
-            }
-            
-            if (elbowThirdLevelFront){
-                rightArm.setPosition(0.25);
-                leftArm.setPosition(0.75);
                 clawSpin.setPosition(0.07);
             }
             

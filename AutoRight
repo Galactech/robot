@@ -188,7 +188,42 @@ public class AutoRight extends LinearOpMode {
         telemetry.update();
         waitForStart();
         if (opModeIsActive()) {
+            long start = System.currentTimeMillis();
+            long end = start + 5 * 1000;
+            boolean exitFromMainLoop = false;
             while (opModeIsActive()) {
+                if (System.currentTimeMillis() > end) {
+                    telemetry.addData("work", "working");
+                    drive(70, 70, 70, 70, 0.25);
+                    sleep(500);
+                    drive(-220, 220, 220, -220, 0.25);
+                    sleep(500);
+                    rightArm.setPosition(0.85);
+                    leftArm.setPosition(0.15);
+                    clawSpin.setPosition(0.07);
+                    sleep(1000);
+                    claw.setPosition(0.6);
+                    //back to original position
+                    rightArm.setPosition(1);
+                    leftArm.setPosition(0);
+                    sleep(500);
+                    drive(220, -220, -220, 220, 0.25);
+                    sleep(500);
+                    drive(-70, -70, -70, -70, 0.25);
+                    drive(10, 10, 10, 10, 0.25);
+                    sleep(300);
+                    drive(40, -40, -40, 40, 0.25);
+                    sleep(700);
+                    drive(570, 570, 570, 570, 0.25);
+                    /*armBasePower = -0.5;
+                    sleep(400);
+                    armBasePower = 0;
+                    rightArm.setPosition(0.78);
+                    leftArm.setPosition(0.22);*/
+                    sleep(1000);
+                    telemetry.update();
+                    break;
+                }
                 if (tfod != null) {
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
@@ -210,9 +245,9 @@ public class AutoRight extends LinearOpMode {
                             telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
                             
                             //first drop
-                            drive(70, 70, 70, 70, 0.25);
+                            drive(40, 40, 40, 40, 0.25);
                             sleep(500);
-                            drive(300, -300, -300, 300, 0.25);
+                            drive(400, -400, -400, 400, 0.25);
                             sleep(500);
                             rightArm.setPosition(0.85);
                             leftArm.setPosition(0.15);
@@ -225,11 +260,11 @@ public class AutoRight extends LinearOpMode {
                             sleep(500);
                             drive(-300, 300, 300, -300, 0.25);
                             sleep(500);
-                            drive(-70, -70, -70, -70, 0.25);
+                            drive(-40, -40, -40, -40, 0.25);
                             //parking
                             telemetry.addData("Work", "working");
                             if (recognition.getLabel().equals("whiteTag")) {
-                                drive(1, 1, 1, 1, 0.25);
+                                drive(20, 20, 20, 20, 0.25);
                                 sleep(500);
                                 drive(680, -680, -680, 680, 0.2);
                                 sleep(1000);
@@ -238,19 +273,21 @@ public class AutoRight extends LinearOpMode {
                                 /*rightArm.setPosition(0.78);
                                 leftArm.setPosition(0.22);*/
                                 sleep(500);
+                                exitFromMainLoop = true;
                                 break;
                             }
                             
                             if (recognition.getLabel().equals("greenTag")) {
-                                drive(1, 1, 1, 1, 0.25);
+                                drive(20, 20, 20, 20, 0.25);
                                 sleep(500);
-                                drive(-540, 540, 540, -540, 0.2);
+                                drive(-620, 620, 620, -620, 0.25);
                                 sleep(800);
-                                drive(605, 605, 605, 605, 0.25);
+                                drive(600, 600, 600, 600, 0.25);
                                 sleep(500);
                                 /*rightArm.setPosition(0.78);
                                 leftArm.setPosition(0.22);*/
                                 sleep(500);
+                                exitFromMainLoop = true;
                                 break;
                             }
                             
@@ -266,11 +303,15 @@ public class AutoRight extends LinearOpMode {
                                 rightArm.setPosition(0.78);
                                 leftArm.setPosition(0.22);*/
                                 sleep(1000);
+                                exitFromMainLoop = true;
                                 break;
                             }
                         telemetry.update();    
                         armBase.setPower(armBasePower);
                         break;
+                        }
+                        if (exitFromMainLoop) {
+                            break;
                         }
                     }
                 }

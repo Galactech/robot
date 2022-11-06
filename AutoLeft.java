@@ -158,6 +158,8 @@ public class AutoLeft extends LinearOpMode {
         backRightPos = 0;
         armPos = 0;
         
+        telemetry.addData("test", System.currentTimeMillis());
+        
         double armBasePower = 0;
         
         waitForStart();
@@ -188,12 +190,50 @@ public class AutoLeft extends LinearOpMode {
         telemetry.update();
         waitForStart();
         if (opModeIsActive()) {
+            long start = System.currentTimeMillis();
+            long end = start + 5 * 1000;
+            telemetry.addData("End", end);
+            telemetry.update();
+            boolean exitFromMainLoop = false;
             while (opModeIsActive()) {
+                if (System.currentTimeMillis() > end) {
+                    telemetry.addData("work", "working");
+                    drive(70, 70, 70, 70, 0.25);
+                    sleep(500);
+                    drive(-220, 220, 220, -220, 0.25);
+                    sleep(500);
+                    rightArm.setPosition(0.85);
+                    leftArm.setPosition(0.15);
+                    clawSpin.setPosition(0.07);
+                    sleep(1000);
+                    claw.setPosition(0.6);
+                    //back to original position
+                    rightArm.setPosition(1);
+                    leftArm.setPosition(0);
+                    sleep(500);
+                    drive(220, -220, -220, 220, 0.25);
+                    sleep(500);
+                    drive(-70, -70, -70, -70, 0.25);
+                    drive(10, 10, 10, 10, 0.25);
+                    sleep(300);
+                    drive(40, -40, -40, 40, 0.25);
+                    sleep(700);
+                    drive(570, 570, 570, 570, 0.25);
+                    /*armBasePower = -0.5;
+                    sleep(400);
+                    armBasePower = 0;
+                    rightArm.setPosition(0.78);
+                    leftArm.setPosition(0.22);*/
+                    sleep(1000);
+                    telemetry.update();
+                    break;
+                }
                 if (tfod != null) {
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
+                        
                         telemetry.addData("# Objects Detected", updatedRecognitions.size());
 
                         // step through the list of recognitions and display image position/size information for each one
@@ -227,7 +267,6 @@ public class AutoLeft extends LinearOpMode {
                             sleep(500);
                             drive(-70, -70, -70, -70, 0.25);
                             //parking
-                            telemetry.addData("Work", "working");
                             if (recognition.getLabel().equals("whiteTag")) {
                                 drive(1, 1, 1, 1, 0.25);
                                 sleep(500);
@@ -238,6 +277,7 @@ public class AutoLeft extends LinearOpMode {
                                 /*rightArm.setPosition(0.78);
                                 leftArm.setPosition(0.22);*/
                                 sleep(500);
+                                exitFromMainLoop = true;
                                 break;
                             }
                             
@@ -251,6 +291,7 @@ public class AutoLeft extends LinearOpMode {
                                 /*rightArm.setPosition(0.78);
                                 leftArm.setPosition(0.22);*/
                                 sleep(500);
+                                exitFromMainLoop = true;
                                 break;
                             }
                             
@@ -266,13 +307,17 @@ public class AutoLeft extends LinearOpMode {
                                 rightArm.setPosition(0.78);
                                 leftArm.setPosition(0.22);*/
                                 sleep(1000);
+                                exitFromMainLoop = true;
                                 break;
                             }
                         telemetry.update();    
                         armBase.setPower(armBasePower);
                         break;
                         }
-                    }
+                        if (exitFromMainLoop) {
+                            break;
+                        }
+                    } 
                 }
             }
         }

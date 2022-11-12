@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.firstComp;
+/*package org.firstinspires.ftc.firstComp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -7,19 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.Range;
 
-
-/**
- * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
- * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
- * of the FTC Driver Station. When a selection is made from the menu, the corresponding OpMode
- * class is instantiated on the Robot Controller and executed.
- *
- * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot
- * It includes all the skeletal structure that all linear OpModes contain.
- *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
- */
 
 @TeleOp(name="TeleOp", group="Linear Opmode")
 
@@ -268,13 +255,12 @@ public class TelOpCode extends LinearOpMode {
             }
             
             
-            /*if (spinUp){
-                clawSpin.setPosition(0.07);
-            }
-
-            if (spinDown){
-                clawSpin.setPosition(0.72);
-            }*/
+            //if (spinUp){
+            //    clawSpin.setPosition(0.07);
+            //}
+            //if (spinDown){
+            //    clawSpin.setPosition(0.72);
+            //}
             
             frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -296,7 +282,7 @@ public class TelOpCode extends LinearOpMode {
             telemetry.update();
         }
         
-    }
+    }*/
     
     /*private void armMovementEncoder(int armTarget, double speed) {
         armPos += armTarget;
@@ -311,4 +297,3 @@ public class TelOpCode extends LinearOpMode {
             idle();
         }
     }*/
-

@@ -1,0 +1,190 @@
+/* Copyright (c) 2017 FIRST. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted (subject to the limitations in the disclaimer below) provided that
+ * the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this list
+ * of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice, this
+ * list of conditions and the following disclaimer in the documentation and/or
+ * other materials provided with the distribution.
+ *
+ * Neither the name of FIRST nor the names of its contributors may be used to endorse or
+ * promote products derived from this software without specific prior written permission.
+ *
+ * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
+ * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+package org.firstinspires.ftc.teamcode.secondCompTest1;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+
+
+/**
+ * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
+ * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
+ * of the FTC Driver Station. When a selection is made from the menu, the corresponding OpMode
+ * class is instantiated on the Robot Controller and executed.
+ *
+ * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot
+ * It includes all the skeletal structure that all linear OpModes contain.
+ *
+ * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
+ * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
+ */
+@Autonomous(name="Auto Test", group="Linear Opmode")
+
+public class AutoTest2 extends LinearOpMode {
+
+    // Declare OpMode members.
+    private DcMotor frontLeftDrive = null;
+    private DcMotor frontRightDrive = null;
+    private DcMotor backLeftDrive = null;
+    private DcMotor backRightDrive = null;
+    
+    private DcMotor armBase = null;
+    
+    private Servo claw = null;
+    private Servo clawSpin = null;
+    private Servo leftArm = null;
+    private Servo rightArm = null;
+    
+    private int frontLeftPos;
+    private int frontRightPos;
+    private int backLeftPos;
+    private int backRightPos;
+    
+    private int armPos;
+
+    @Override
+    public void runOpMode() {
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
+
+        // Initialize the hardware variables. Note that the strings used here as parameters
+        // to 'get' must correspond to the names assigned during the robot configuration
+        // step (using the FTC Robot Controller app on the phone).
+        frontLeftDrive  = hardwareMap.get(DcMotor.class, "Frontleft");
+        frontRightDrive = hardwareMap.get(DcMotor.class, "Frontright");
+        backLeftDrive  = hardwareMap.get(DcMotor.class, "Backleft");
+        backRightDrive = hardwareMap.get(DcMotor.class, "Backright");
+        
+        armBase  = hardwareMap.get(DcMotor.class, "armbase");
+        
+        claw  = hardwareMap.get(Servo.class, "claw");
+        clawSpin = hardwareMap.get(Servo.class, "clawspin");
+        leftArm  = hardwareMap.get(Servo.class, "leftarm");
+        rightArm = hardwareMap.get(Servo.class, "rightarm");
+        
+        frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        
+        frontLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontRightDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+        backRightDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+        backLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        
+        claw.setPosition(0.85);
+        rightArm.setPosition(1);
+        leftArm.setPosition(0);
+        clawSpin.setPosition(0.07);
+        
+        frontLeftPos = 0;
+        frontRightPos = 0;
+        backLeftPos = 0;
+        backRightPos = 0;
+        
+        double armBasePower = 0;
+
+        // Wait for the game to start (driver presses PLAY)
+        waitForStart();
+
+        // run until the end of the match (driver presses STOP)
+        while (opModeIsActive()) {
+            drive(70, 70, 70, 70, 0.25);
+            sleep(500);
+            drive(-280, 280, 280, -280, 0.25);
+            sleep(500);
+            drive(325, 325, 325, 325, 0.25);
+            sleep(500);
+            armMovementEncoder(-127, 0.75);
+            clawSpin.setPosition(0);
+            rightArm.setPosition(0.8);
+            leftArm.setPosition(0.2);
+            clawSpin.setPosition(0);
+            rightArm.setPosition(0.75);
+            leftArm.setPosition(0.25);
+            sleep(2000);
+            claw.setPosition(0.50);
+            armMovementEncoder(150, 0.2);
+            sleep(500);
+            drive(350, -350, -350, 350, 0.25);
+            sleep(500);
+            drive(400, 400, 400, 400, 0.25);
+            armBase.setPower(armBasePower);
+            break;
+        }
+    }
+    
+    private void drive(int frontLeftTarget, int frontRightTarget, int backLeftTarget, int backRightTarget, double speed) {
+        frontLeftPos += frontLeftTarget;
+        frontRightPos += frontRightTarget;
+        backLeftPos += backLeftTarget;
+        backRightPos += backRightTarget;
+        
+        frontLeftDrive.setTargetPosition(frontLeftPos);
+        frontRightDrive.setTargetPosition(frontRightPos);
+        backLeftDrive.setTargetPosition(backLeftPos);
+        backRightDrive.setTargetPosition(backRightPos);
+        
+        frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        
+        frontLeftDrive.setPower(speed);
+        frontRightDrive.setPower(speed);
+        backLeftDrive.setPower(speed);
+        backRightDrive.setPower(speed);
+        
+        while(opModeIsActive() && frontLeftDrive.isBusy() && frontRightDrive.isBusy() && backLeftDrive.isBusy() && backRightDrive.isBusy()) {
+            idle();
+        }
+    }
+    
+    private void armMovementEncoder(int armTarget, double speed) {
+        armPos += armTarget;
+        
+        armBase.setTargetPosition(armPos);
+        
+        armBase.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        
+        armBase.setPower(speed);
+        
+        while(opModeIsActive() && armBase.isBusy()) {
+            idle();
+        }
+    }
+}

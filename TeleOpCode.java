@@ -218,34 +218,33 @@ public class TelOpCode extends LinearOpMode {
             }
 
             if (elbowRest){
-                rightArm.setPosition(0.78);
-                leftArm.setPosition(0.22);
-                clawSpin.setPosition(0.07);
+                rightArm.setPosition(0.75);
+                leftArm.setPosition(0.25);
+                clawSpin.setPosition(0.0);
             }
             
             if (elbowFirstLevelFront){
-                rightArm.setPosition(0.80);
-                leftArm.setPosition(0.20);
-                clawSpin.setPosition(0.07);
+                rightArm.setPosition(0.75);
+                leftArm.setPosition(0.25);
+                clawSpin.setPosition(0.00);
             }
             
             if (elbowThirdLevelBack){
-                clawSpin.setPosition(0.72);
-                rightArm.setPosition(0.65);
-                leftArm.setPosition(0.35);
+                clawSpin.setPosition(0.625);
+                rightArm.setPosition(0.585);
+                leftArm.setPosition(0.415);
             }
             
             if (elbowSecondLevelBack){
-                clawSpin.setPosition(0.72);
-                rightArm.setPosition(0.8);
-                leftArm.setPosition(0.2);
+                clawSpin.setPosition(0.625);
+                rightArm.setPosition(0.765);
+                leftArm.setPosition(0.235);
             }
             
             
             /*if (spinUp){
                 clawSpin.setPosition(0.07);
             }
-
             if (spinDown){
                 clawSpin.setPosition(0.72);
             }*/

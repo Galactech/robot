@@ -54,9 +54,9 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  * is explained below.
  */
 
-@Autonomous(name = "Auto2WebcamTest")
+@Autonomous(name = "Auto2Test")
 
-public class Auto2WebcamTest extends LinearOpMode {
+public class Auto2Test extends LinearOpMode {
     
     private DcMotor frontLeftDrive = null;
     private DcMotor frontRightDrive = null;
@@ -119,10 +119,33 @@ public class Auto2WebcamTest extends LinearOpMode {
      * Detection engine.
      */
     private TFObjectDetector tfod;
+    
+    boolean rowAdjusted = false;
+    boolean colAdjusted = false;
+    
+    double col = 0;
+    double row = 0;
+    double width  = 0;
+    double height = 0;
+    
+    double armBasePower = 0;
+    
+    double left = 0;
+    double right = 0;
+    double top = 0;
+    double bottom = 0;
+
+    double vPosFrontLeft = 0;
+    double vPosFrontRight = 0;
+    double vPosBackLeft = 0;
+    double vPosBackRight = 0;
+    
+    List<Recognition> updatedRecognitions;
+    
+    
 
     @Override
-    public void runOpMode() {
-        
+    public void runOpMode() {            
         
         frontLeftDrive  = hardwareMap.get(DcMotor.class, "Frontleft");
         frontRightDrive = hardwareMap.get(DcMotor.class, "Frontright");
@@ -149,7 +172,7 @@ public class Auto2WebcamTest extends LinearOpMode {
         claw.setPosition(0.85);
         rightArm.setPosition(1);
         leftArm.setPosition(0);
-        clawSpin.setPosition(0.625);
+        clawSpin.setPosition(0.07);
         
         frontLeftPos = 0;
         frontRightPos = 0;
@@ -157,9 +180,7 @@ public class Auto2WebcamTest extends LinearOpMode {
         backRightPos = 0;
         armPos = 0;
         
-        telemetry.addData("test", System.currentTimeMillis());
-        
-        double armBasePower = 0;
+        telemetry.addData("test", System.currentTimeMillis());      
         
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
@@ -193,67 +214,107 @@ public class Auto2WebcamTest extends LinearOpMode {
             telemetry.update();
             boolean exitFromMainLoop = false;
             while (opModeIsActive()) {
-                drive(70, 70, 70, 70, 0.20);
-                sleep(500);
-                drive(-280, 280, 280, -280, 0.20);
-                sleep(500);
-                drive(345, 345, 345, 345, 0.20);
-                sleep(500);
-                rightArm.setPosition(0.8);
-                leftArm.setPosition(0.2);
-                armMovementEncoder(-127, 0.75);
-                clawSpin.setPosition(0);
-                sleep(100);
-                rightArm.setPosition(0.8);
-                leftArm.setPosition(0.2);
-                sleep(2000);
-                claw.setPosition(0.50);
-                sleep(500);
-                rightArm.setPosition(1);
-                leftArm.setPosition(0);
-                armMovementEncoder(120, 0.2);
-                drive(170, 170, 170, 170, 0.20);
-                sleep(500);
-                drive(390, -390, -390, 390, 0.20);
-                sleep(500);
-                drive(-50, 50, 50, -50, 0.20);
-                sleep(500);
-                drive(550, 550, 550, 550, 0.20);
-                drive(-530, 530, -530, 530, 0.20);
-                sleep(2000);
+                
                 if (tfod != null) {
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
-                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                    updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
                         
                         telemetry.addData("# Objects Detected", updatedRecognitions.size());
 
-                        // step through the list of recognitions and display image position/size information for each one
-                        // Note: "Image number" refers to the randomized image orientation/number
-                        for (Recognition recognition : updatedRecognitions) {
-                            double col = (recognition.getLeft() + recognition.getRight()) / 2 ;
-                            double row = (recognition.getTop()  + recognition.getBottom()) / 2 ;
-                            double width  = Math.abs(recognition.getRight() - recognition.getLeft()) ;
-                            double height = Math.abs(recognition.getTop()  - recognition.getBottom()) ;
-
-                            telemetry.addData(""," ");
-                            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100 );
-                            telemetry.addData("- Position (Row/Col)","%.0f / %.0f", row, col);
-                            telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
-                            
-                            drive(375, 375, 375, 375, 0.25);
-                        telemetry.update();    
-                        armBase.setPower(armBasePower);
-                        //break;
-                        sleep(100000);
-                        }
+                        //recognizeRed5Cone();
+                        //if (colAdjusted && rowAdjusted) {
+                            cycleTopCone();
+                            break;
+                        //}
+                        
                     } 
                 }
-                break;
+
+                //Get this from Pranav
+                vPosFrontLeft = frontLeftDrive.getCurrentPosition();
+                vPosFrontRight = frontRightDrive.getCurrentPosition();
+                vPosBackRight = backRightDrive.getCurrentPosition();
+                vPosBackLeft = backLeftDrive.getCurrentPosition();
+                
+
+                /*telemetry.addData("Vehicle Front Left", vPosFrontLeft);
+                telemetry.addData("Vehicle Front Right", vPosFrontRight);
+                telemetry.addData("Vehicle Back Left", vPosBackLeft);
+                telemetry.addData("Vehicle Back Right", vPosBackRight);
+                telemetry.update();*/
+
             }
         }
     }
+
+    //List <String> moveFlow = new List<String>(); //= {"F:1,B:1","F:1,B:1"};
+    String[] moveFlow;
+
+    private void AutomMove(String movepath)
+    {
+        for (String move: moveFlow) {
+
+            String[] path = move.split("[,]", 0);
+            for(String dirpos: path) {
+
+                //String[] path = dirpos.split(":", 0);                
+                MoveToTile(2, "");
+
+            }
+        }
+    }
+
+    
+    //When the battery is good
+    private void RoboHappy()
+    {
+        telemetry.addData("I am Happy!", "I am Happy!");        
+    }
+
+    //When the battery is low
+    private void RoboSad()
+    {
+        telemetry.addData("I am not Happy!", "I am not Happy!");
+    }
+    
+
+    private void getSensor()
+    {
+        //Check if Senor has some data
+    }
+
+
+    private void MoveToTile(int numberofTiles, String direction)
+    {
+
+        //Front    
+        if(direction == "F")
+        {}
+
+        //Back
+        if(direction == "B")
+        {}
+
+        //Left 
+        if(direction == "L")
+        {}
+
+        //Right
+        if(direction == "R")
+        {}
+
+        //Left Diag
+        if(direction == "LD")
+        {}
+
+        //Right Diag
+        if(direction == "RD")
+        {}        
+
+    }
+
 
     /**
      * Initialize the Vuforia localization engine.
@@ -315,17 +376,221 @@ public class Auto2WebcamTest extends LinearOpMode {
         }
     }
     
+    // double expectedRowPosition = 289;
+    // double expectedColPosition = 210;  
+    
+    double expectedRowPosition = 220;
+    double expectedColPosition = 230;  
+    
+    double rowAdjustor = expectedRowPosition - 5; 
+    double colAdjustor = expectedColPosition - 5; 
+
+    int rowrevserAdjustor = -2;
+    int rowforwardAdjustor = 2;
+
+    int colleftAdjustor = -2;
+    int colrightAdjustor = 2;
+    
+    private void center(){
+
+        //ROW Start 
+
+        //When the vehicle is moved forward get it back to align center
+        if (row > expectedRowPosition) {
+            drive(rowrevserAdjustor, rowrevserAdjustor, rowrevserAdjustor, rowrevserAdjustor, 0.3);
+            telemetry.update(); 
+        } 
+
+        //If the vehicle is in the expected Row range   
+        if(row > rowAdjustor && row < expectedRowPosition){        
+        
+            rowAdjusted = true;
+        }
+        
+        //When the vehicle is moved back get it front to align center
+        if (!rowAdjusted && row < rowAdjustor) {
+            drive(rowforwardAdjustor, rowforwardAdjustor, rowforwardAdjustor, rowforwardAdjustor, 0.3);
+            telemetry.update(); 
+        } 
+        
+          //If the vehicle is in the expected Row range   
+        if(row > rowAdjustor && row < expectedRowPosition){        
+        
+            rowAdjusted = true;
+        }
+        
+        //ROW End 
+
+
+        //COL Start 
+
+
+         //When the vehicle is moved forward get it back to align center
+        if (col > expectedColPosition) {
+            drive(-colleftAdjustor, colleftAdjustor, colleftAdjustor, -colleftAdjustor, 0.3);
+            telemetry.update(); 
+        } 
+
+        //If the vehicle is in the expected Col range   
+        if(col > colAdjustor && col < expectedColPosition){        
+        
+            colAdjusted = true;
+        }
+        
+        //When the vehicle is moved back get it front to align center
+        if (!colAdjusted && col < colAdjustor) {
+            drive(-colrightAdjustor, colrightAdjustor, colrightAdjustor, -colrightAdjustor, 0.3);
+            telemetry.update(); 
+        } 
+        
+          //If the vehicle is in the expected Col range   
+        if(col > colAdjustor && col < expectedColPosition){        
+        
+            colAdjusted = true;
+        }
+        //COL End
+        telemetry.update(); 
+        armBase.setPower(armBasePower);
+    }
+    
+    String MLLabel = "";
+    
+    private void recognizeRed5Cone() {
+        
+        // step through the list of recognitions and display image position/size information for each one
+        // Note: "Image number" refers to the randomized image orientation/number
+        for (Recognition recognition : updatedRecognitions) {
+            col = (recognition.getLeft() + recognition.getRight()) / 2 ;
+            row = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+            width  = Math.abs(recognition.getRight() - recognition.getLeft()) ;
+            height = Math.abs(recognition.getTop()  - recognition.getBottom()) ;
+
+            left = recognition.getLeft();
+            right = recognition.getRight();
+            top = recognition.getTop();
+            bottom = recognition.getBottom();
+
+            MLLabel = "Image" + recognition.getLabel();
+            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100 );
+            
+            telemetry.addData("getLeft", recognition.getLeft());
+            telemetry.addData("getRight", recognition.getRight());
+            telemetry.addData("getTop", recognition.getTop());
+            telemetry.addData("getBottom", recognition.getBottom());
+                
+            
+            //center();
+            telemetryOutput("", "");
+            if (rowAdjusted && colAdjusted) {
+                cycleTopCone();
+                break;
+            }
+        }
+    }
+    
+    double numberofConesStack = 5;
+
+    private void cycleTopCone() {
+        //spinclaw
+        clawSpin.setPosition(0);
+        //clawOpen
+        claw.setPosition(0.50);
+        //forward
+        drive(250, 250, 250, 250, 0.2);
+        sleep(1000);
+        //turnLeft
+        drive(-45, 45, -45, 45, 0.2);
+        sleep(500);
+        //forward
+        drive(32, 32, 32, 32, 0.2);
+        sleep(1000);
+        //armUp
+        armMovementEncoder(-60, 1);
+        sleep(1000);
+        //servoPosition
+        rightArm.setPosition(0.7);
+        leftArm.setPosition(0.3);
+        sleep(1500);
+        //armUp
+        armMovementEncoder(-35, 1);
+        sleep(1500);
+        //turnRight
+        drive(45, -45, 45, -45, 0.2);
+        sleep(500);
+        //clawClose
+        claw.setPosition(0.90);
+        sleep(500);
+        
+        //servoPosition
+        rightArm.setPosition(1);
+        leftArm.setPosition(0);
+        sleep(500);
+        //back
+        drive(-320, -320, -320, -320, 0.2);
+        sleep(2000);
+        //armdown
+        armMovementEncoder(95, 0.2);
+        sleep(1000);
+        //turnLeft
+        drive(-280, 280, -280, 280, 0.2);
+        sleep(1000);
+        //spinclaw
+        clawSpin.setPosition(0.625);
+        sleep(500);
+        //armallthewayback
+        armMovementEncoder(-390, 0.8);
+        sleep(500);
+        //positionservos
+        rightArm.setPosition(0.57);
+        leftArm.setPosition(0.43);
+        sleep(1000);
+        //turnLeft
+        drive(-32, 32, -32, 30, 0.2);
+        sleep(500);
+        //drop
+        claw.setPosition(0.50);
+        sleep(1000);
+        //turnLeft
+        drive(-20, 20, -20, 20, 0.2);
+        sleep(500);
+        //servocompress
+        rightArm.setPosition(1);
+        leftArm.setPosition(0);
+        sleep(1000);
+        //armdown
+        armMovementEncoder(390, 0.2);
+        sleep(1000);
+        //back
+        drive(30, 30, 30, 30, 0.2);
+        sleep(2000);
+        //turnright
+        drive(350, -350, -350, -350, 0.2);
+        sleep(2000);
+        telemetry.addData("end", "end");
+        numberofConesStack--;
+
+    }
+    
     private void armMovementEncoder(int armTarget, double speed) {
-        armPos += armTarget;
-        
-        armBase.setTargetPosition(armPos);
-        
-        armBase.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        
-        armBase.setPower(speed);
-        
+
+        armPos += armTarget;        
+        armBase.setTargetPosition(armPos);        
+        armBase.setMode(DcMotor.RunMode.RUN_TO_POSITION);        
+        armBase.setPower(speed);        
         while(opModeIsActive() && armBase.isBusy()) {
             idle();
         }
+
+    }
+    
+    private void telemetryOutput(String param1, String param2) {
+        telemetry.addData(param1, param2);
+        telemetry.addData(MLLabel, MLLabel);
+        telemetry.addData("- Position (Row/Col)","%.0f / %.0f", row, col);
+        telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
+        telemetry.addData("- left/right ","%.0f / %.0f", left, right);
+        telemetry.addData("- top/bottom","%.0f / %.0f", top, bottom);
+        telemetry.addData("","");
+        telemetry.update();
     }
 }

@@ -506,13 +506,13 @@ public class Auto2Test extends LinearOpMode {
         sleep(1000);
         //armUp
         armMovementEncoder(-60, 1);
-        sleep(1000);
+        sleep(500);
         //servoPosition
         rightArm.setPosition(0.7);
         leftArm.setPosition(0.3);
-        sleep(1500);
+        sleep(500);
         //armUp
-        armMovementEncoder(-35, 1);
+        armMovementEncoder(-25, 1);
         sleep(1500);
         //turnRight
         drive(45, -45, 45, -45, 0.2);
@@ -526,26 +526,25 @@ public class Auto2Test extends LinearOpMode {
         leftArm.setPosition(0);
         sleep(500);
         //back
-        drive(-320, -320, -320, -320, 0.2);
-        sleep(2000);
-        //armdown
-        armMovementEncoder(95, 0.2);
+        drive(-300, -300, -300, -300, 0.2);
         sleep(1000);
         //turnLeft
-        drive(-280, 280, -280, 280, 0.2);
+        drive(-260, 260, -260, 260, 0.2);
         sleep(1000);
         //spinclaw
         clawSpin.setPosition(0.625);
         sleep(500);
         //armallthewayback
-        armMovementEncoder(-390, 0.8);
+        armMovementEncoder(-280, 0.8);
         sleep(500);
+        armMovementEncoder(-35, 0.4);
+        sleep(300);
         //positionservos
         rightArm.setPosition(0.57);
         leftArm.setPosition(0.43);
         sleep(1000);
         //turnLeft
-        drive(-32, 32, -32, 30, 0.2);
+        drive(-35, 35, -35, 35, 0.2);
         sleep(500);
         //drop
         claw.setPosition(0.50);
@@ -558,14 +557,14 @@ public class Auto2Test extends LinearOpMode {
         leftArm.setPosition(0);
         sleep(1000);
         //armdown
-        armMovementEncoder(390, 0.2);
-        sleep(1000);
-        //back
-        drive(30, 30, 30, 30, 0.2);
-        sleep(2000);
+        //armMovementEncoder(390, 0.15);
+        //sleep(2000);
+        //forward
+        //drive(30, 30, 30, 30, 0.2);
+        //sleep(2000);
         //turnright
-        drive(350, -350, -350, -350, 0.2);
-        sleep(2000);
+        //drive(350, -350, -350, -350, 0.2);
+        //sleep(2000);
         telemetry.addData("end", "end");
         numberofConesStack--;
 

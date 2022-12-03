@@ -1,4 +1,4 @@
-/*package org.firstinspires.ftc.firstComp;
+package org.firstinspires.ftc.firstComp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,9 +8,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.Range;
 
 
-@TeleOp(name="TeleOp", group="Linear Opmode")
+/*@TeleOp(name="TeleOp2", group="Linear Opmode")
 
-public class TelOpCode extends LinearOpMode {
+public class TeleOp2 extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -282,7 +282,7 @@ public class TelOpCode extends LinearOpMode {
             telemetry.update();
         }
         
-    }*/
+    }
     
     /*private void armMovementEncoder(int armTarget, double speed) {
         armPos += armTarget;

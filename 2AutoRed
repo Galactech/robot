@@ -54,9 +54,9 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  * is explained below.
  */
 
-@Autonomous(name = "Auto2Test")
+@Autonomous(name = "AutoRed")
 
-public class Auto2Test extends LinearOpMode {
+public class AutoRed extends LinearOpMode {
     
     private DcMotor frontLeftDrive = null;
     private DcMotor frontRightDrive = null;
@@ -84,14 +84,31 @@ public class Auto2Test extends LinearOpMode {
      * has been downloaded to the Robot Controller's SD FLASH memory, it must to be loaded using loadModelFromFile()
      * Here we assume it's an Asset.    Also see method initTfod() below .
      */
-    private static final String TFOD_MODEL_FILE = "RedConeTest.tflite";
+    private static String TFOD_MODEL_FILE = "redWebcam.tflite";
+    
     // private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
 
 
-    private static final String[] LABELS = {
-            "3 red cones",
-            "4 red cones",
-            "5 red cones"
+    private static String[] LABELS = {
+            /*"blue1",
+            "blue2",
+            "blue3",*/
+            "red1",
+            "red2",
+            "red3"
+            
+            /*"purpleTag",
+            "greenTag",
+            "whiteTag"
+            
+                
+            "blue5",
+            "bluestackwtape",
+            "bluetapefloor",
+            "red5",
+            "reddown",
+            "redstackwtape",
+            "redtapefloor"*/
     };
 
     /*
@@ -140,6 +157,8 @@ public class Auto2Test extends LinearOpMode {
     double vPosBackLeft = 0;
     double vPosBackRight = 0;
     
+    String sleeveRecognition = "red3";
+    
     List<Recognition> updatedRecognitions;
     
     
@@ -172,15 +191,18 @@ public class Auto2Test extends LinearOpMode {
         claw.setPosition(0.85);
         rightArm.setPosition(1);
         leftArm.setPosition(0);
-        clawSpin.setPosition(0.07);
+        clawSpin.setPosition(0.715);
         
         frontLeftPos = 0;
         frontRightPos = 0;
         backLeftPos = 0;
         backRightPos = 0;
         armPos = 0;
+        boolean starting = true;
         
-        telemetry.addData("test", System.currentTimeMillis());      
+        telemetry.addData("test", System.currentTimeMillis()); 
+        
+        
         
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
@@ -202,118 +224,80 @@ public class Auto2Test extends LinearOpMode {
             // (typically 16/9).
             tfod.setZoom(1.0, 16.0/9.0);
         }
+        long startauton = System.currentTimeMillis();
+        while (starting){
+            long current = System.currentTimeMillis();
+            boolean detecteds = false;
+            if(current == startauton + 8 * 1000) {
+                telemetry.addData("Detected:", detecteds);
+                telemetry.update();
+                break;
+            }
+            if (tfod != null) {
+                detecteds = true;
+                telemetry.addData("Detected:", detecteds);
+                telemetry.update();
+                // getUpdatedRecognitions() will return null if no new information is available since
+                // the last time that call was made.
+                updatedRecognitions = tfod.getUpdatedRecognitions();
+                if (updatedRecognitions != null) {
+                    
+                    telemetry.addData("# Objects Detected", updatedRecognitions.size());
+                    telemetry.update();
+                    
+                    for (Recognition recognition : updatedRecognitions) {
+                        double col = (recognition.getLeft() + recognition.getRight()) / 2 ;
+                        double row = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+                        double width  = Math.abs(recognition.getRight() - recognition.getLeft()) ;
+                        double height = Math.abs(recognition.getTop()  - recognition.getBottom()) ;
+                        
+                        sleeveRecognition = recognition.getLabel();
+                        telemetry.addData(sleeveRecognition, ".");
+                        
+    
+                        
+                        telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100 );
+                        telemetry.addData("- Position (Row/Col)","%.0f / %.0f", row, col);
+                        telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
+                        telemetry.update();
+                        starting = false;
+                        break;
+                    }
+                    
+                } 
+            }
+        }
+        //telemetry.addData("exit", "exit");
+        //telemetry.update();
 
         /** Wait for the game to begin */
-        telemetry.addData(">", "Press Play to start op mode");
+        //telemetry.addData(">", "Press Play to start op mode");
+        telemetry.addData("sleeveRecognition", sleeveRecognition);
         telemetry.update();
         waitForStart();
         if (opModeIsActive()) {
             long start = System.currentTimeMillis();
             long end = start + 5 * 1000;
-            telemetry.addData("End", end);
-            telemetry.update();
+            
             boolean exitFromMainLoop = false;
             while (opModeIsActive()) {
-                
-                if (tfod != null) {
-                    // getUpdatedRecognitions() will return null if no new information is available since
-                    // the last time that call was made.
-                    updatedRecognitions = tfod.getUpdatedRecognitions();
-                    if (updatedRecognitions != null) {
-                        
-                        telemetry.addData("# Objects Detected", updatedRecognitions.size());
-
-                        //recognizeRed5Cone();
-                        //if (colAdjusted && rowAdjusted) {
-                            cycleTopCone();
-                            break;
-                        //}
-                        
-                    } 
-                }
-
-                //Get this from Pranav
-                vPosFrontLeft = frontLeftDrive.getCurrentPosition();
-                vPosFrontRight = frontRightDrive.getCurrentPosition();
-                vPosBackRight = backRightDrive.getCurrentPosition();
-                vPosBackLeft = backLeftDrive.getCurrentPosition();
-                
-
-                /*telemetry.addData("Vehicle Front Left", vPosFrontLeft);
-                telemetry.addData("Vehicle Front Right", vPosFrontRight);
-                telemetry.addData("Vehicle Back Left", vPosBackLeft);
-                telemetry.addData("Vehicle Back Right", vPosBackRight);
-                telemetry.update();*/
+                telemetry.addData("Running", "running");
+                telemetry.update();
+                move();
+                //center();
+                //cycleTopCone1();
+                //center();
+                //grab();
+                //cycleTopCone2();
+                park(sleeveRecognition);
+                sleep(1000);
+                break;
 
             }
         }
     }
 
     //List <String> moveFlow = new List<String>(); //= {"F:1,B:1","F:1,B:1"};
-    String[] moveFlow;
-
-    private void AutomMove(String movepath)
-    {
-        for (String move: moveFlow) {
-
-            String[] path = move.split("[,]", 0);
-            for(String dirpos: path) {
-
-                //String[] path = dirpos.split(":", 0);                
-                MoveToTile(2, "");
-
-            }
-        }
-    }
-
-    
-    //When the battery is good
-    private void RoboHappy()
-    {
-        telemetry.addData("I am Happy!", "I am Happy!");        
-    }
-
-    //When the battery is low
-    private void RoboSad()
-    {
-        telemetry.addData("I am not Happy!", "I am not Happy!");
-    }
-    
-
-    private void getSensor()
-    {
-        //Check if Senor has some data
-    }
-
-
-    private void MoveToTile(int numberofTiles, String direction)
-    {
-
-        //Front    
-        if(direction == "F")
-        {}
-
-        //Back
-        if(direction == "B")
-        {}
-
-        //Left 
-        if(direction == "L")
-        {}
-
-        //Right
-        if(direction == "R")
-        {}
-
-        //Left Diag
-        if(direction == "LD")
-        {}
-
-        //Right Diag
-        if(direction == "RD")
-        {}        
-
-    }
 
 
     /**
@@ -379,8 +363,8 @@ public class Auto2Test extends LinearOpMode {
     // double expectedRowPosition = 289;
     // double expectedColPosition = 210;  
     
-    double expectedRowPosition = 220;
-    double expectedColPosition = 230;  
+    double expectedRowPosition = 220;//220
+    double expectedColPosition = 260;//230
     
     double rowAdjustor = expectedRowPosition - 5; 
     double colAdjustor = expectedColPosition - 5; 
@@ -392,65 +376,136 @@ public class Auto2Test extends LinearOpMode {
     int colrightAdjustor = 2;
     
     private void center(){
+        
+        TFOD_MODEL_FILE = "ConeStack.tflite";
+        
+        String[] label1 = {
+            "blue5",
+            "bluestackwtape",
+            "bluetapefloor",
+            "red5",
+            "reddown",
+            "redstackwtape",
+            "redtapefloor"
+        };
+        
+        LABELS = label1;
+        initTfod();
 
         //ROW Start 
+        if (tfod != null) {
+            tfod.activate();
 
-        //When the vehicle is moved forward get it back to align center
-        if (row > expectedRowPosition) {
-            drive(rowrevserAdjustor, rowrevserAdjustor, rowrevserAdjustor, rowrevserAdjustor, 0.3);
-            telemetry.update(); 
-        } 
-
-        //If the vehicle is in the expected Row range   
-        if(row > rowAdjustor && row < expectedRowPosition){        
-        
-            rowAdjusted = true;
+            // The TensorFlow software will scale the input images from the camera to a lower resolution.
+            // This can result in lower detection accuracy at longer distances (> 55cm or 22").
+            // If your target is at distance greater than 50 cm (20") you can increase the magnification value
+            // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
+            // should be set to the value of the images used to create the TensorFlow Object Detection model
+            // (typically 16/9).
+            tfod.setZoom(1.0, 16.0/9.0);
         }
-        
-        //When the vehicle is moved back get it front to align center
-        if (!rowAdjusted && row < rowAdjustor) {
-            drive(rowforwardAdjustor, rowforwardAdjustor, rowforwardAdjustor, rowforwardAdjustor, 0.3);
-            telemetry.update(); 
-        } 
-        
-          //If the vehicle is in the expected Row range   
-        if(row > rowAdjustor && row < expectedRowPosition){        
-        
-            rowAdjusted = true;
+        boolean starting2 = true;
+        while (starting2){
+            if (tfod != null) {
+                // getUpdatedRecognitions() will return null if no new information is available since
+                // the last time that call was made.
+                updatedRecognitions = tfod.getUpdatedRecognitions();
+                if (updatedRecognitions != null) {
+                    
+                    col = 0;
+                    row = 0;
+                    width  = 0;
+                    height = 0;
+                    
+                    telemetry.addData("# Objects Detected", updatedRecognitions.size());
+                    telemetry.update();
+                    
+                    for (Recognition recognition : updatedRecognitions) {
+                        col = (recognition.getLeft() + recognition.getRight()) / 2 ;
+                        row = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+                        width  = Math.abs(recognition.getRight() - recognition.getLeft()) ;
+                        height = Math.abs(recognition.getTop()  - recognition.getBottom()) ;
+                        
+                        sleeveRecognition = recognition.getLabel();
+                        telemetry.addData(sleeveRecognition, ".");
+                        
+    
+                        telemetry.addData("","");
+                        telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100 );
+                        telemetry.addData("- Position (Row/Col)","%.0f / %.0f", row, col);
+                        telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
+                        telemetry.update();
+                        
+                        if (recognition.getLabel() == "red5") {
+                            telemetry.addData("row", row);
+                            telemetry.addData("col", col);
+                            telemetry.update();
+                            //When the vehicle is moved forward get it back to align center
+                            if (row > expectedRowPosition) {
+                                drive(rowrevserAdjustor, rowrevserAdjustor, rowrevserAdjustor, rowrevserAdjustor, 0.3);
+                                telemetry.update(); 
+                            } 
+                    
+                            //If the vehicle is in the expected Row range   
+                            if(row > rowAdjustor && row < expectedRowPosition){        
+                            
+                                rowAdjusted = true;
+                            }
+                            
+                            //When the vehicle is moved back get it front to align center
+                            if (!rowAdjusted && row < rowAdjustor) {
+                                drive(rowforwardAdjustor, rowforwardAdjustor, rowforwardAdjustor, rowforwardAdjustor, 0.3);
+                                telemetry.update(); 
+                            } 
+                            
+                              //If the vehicle is in the expected Row range   
+                            if(row > rowAdjustor && row < expectedRowPosition){        
+                            
+                                rowAdjusted = true;
+                            }
+                            
+                            //ROW End 
+                    
+                    
+                            //COL Start 
+                    
+                    
+                             //When the vehicle is moved forward get it back to align center
+                            if (col > expectedColPosition) {
+                                drive(-colleftAdjustor, colleftAdjustor, colleftAdjustor, -colleftAdjustor, 0.3);
+                                telemetry.update(); 
+                            } 
+                    
+                            //If the vehicle is in the expected Col range   
+                            if(col > colAdjustor && col < expectedColPosition){        
+                            
+                                colAdjusted = true;
+                            }
+                            
+                            //When the vehicle is moved back get it front to align center
+                            if (!colAdjusted && col < colAdjustor) {
+                                drive(-colrightAdjustor, colrightAdjustor, colrightAdjustor, -colrightAdjustor, 0.3);
+                                telemetry.update(); 
+                            } 
+                            
+                              //If the vehicle is in the expected Col range   
+                            if(col > colAdjustor && col < expectedColPosition){        
+                            
+                                colAdjusted = true;
+                            }
+                            //COL End
+                            telemetry.update();
+                            if(colAdjusted && rowAdjusted) {
+                                starting2 = false;
+                                break;
+                            }
+                        }
+                    }
+                    
+                } 
+            }
         }
-        
-        //ROW End 
 
-
-        //COL Start 
-
-
-         //When the vehicle is moved forward get it back to align center
-        if (col > expectedColPosition) {
-            drive(-colleftAdjustor, colleftAdjustor, colleftAdjustor, -colleftAdjustor, 0.3);
-            telemetry.update(); 
-        } 
-
-        //If the vehicle is in the expected Col range   
-        if(col > colAdjustor && col < expectedColPosition){        
-        
-            colAdjusted = true;
-        }
-        
-        //When the vehicle is moved back get it front to align center
-        if (!colAdjusted && col < colAdjustor) {
-            drive(-colrightAdjustor, colrightAdjustor, colrightAdjustor, -colrightAdjustor, 0.3);
-            telemetry.update(); 
-        } 
-        
-          //If the vehicle is in the expected Col range   
-        if(col > colAdjustor && col < expectedColPosition){        
-        
-            colAdjusted = true;
-        }
-        //COL End
-        telemetry.update(); 
-        armBase.setPower(armBasePower);
     }
     
     String MLLabel = "";
@@ -482,92 +537,145 @@ public class Auto2Test extends LinearOpMode {
             //center();
             telemetryOutput("", "");
             if (rowAdjusted && colAdjusted) {
-                cycleTopCone();
                 break;
             }
         }
     }
     
-    double numberofConesStack = 5;
-
-    private void cycleTopCone() {
-        //spinclaw
-        clawSpin.setPosition(0);
-        //clawOpen
-        claw.setPosition(0.50);
-        //forward
-        drive(250, 250, 250, 250, 0.2);
-        sleep(1000);
-        //turnLeft
-        drive(-45, 45, -45, 45, 0.2);
-        sleep(500);
-        //forward
-        drive(32, 32, 32, 32, 0.2);
-        sleep(1000);
-        //armUp
-        armMovementEncoder(-60, 1);
-        sleep(500);
-        //servoPosition
-        rightArm.setPosition(0.7);
-        leftArm.setPosition(0.3);
-        sleep(500);
-        //armUp
-        armMovementEncoder(-25, 1);
-        sleep(1500);
-        //turnRight
-        drive(45, -45, 45, -45, 0.2);
-        sleep(500);
-        //clawClose
-        claw.setPosition(0.90);
-        sleep(500);
-        
+    private void cycleTopCone1() {
         //servoPosition
         rightArm.setPosition(1);
         leftArm.setPosition(0);
-        sleep(500);
-        //back
-        drive(-300, -300, -300, -300, 0.2);
-        sleep(1000);
         //turnLeft
-        drive(-260, 260, -260, 260, 0.2);
-        sleep(1000);
+        drive(-255, 255, -255, 255, 0.2);
+        sleep(800);
         //spinclaw
-        clawSpin.setPosition(0.625);
-        sleep(500);
+        clawSpin.setPosition(0.715);
+        sleep(200);
         //armallthewayback
-        armMovementEncoder(-280, 0.8);
-        sleep(500);
-        armMovementEncoder(-35, 0.4);
+        armMovementEncoder(-370, 0.8);
         sleep(300);
+        armMovementEncoder(-35, 0.4);
+        sleep(200);
         //positionservos
         rightArm.setPosition(0.57);
         leftArm.setPosition(0.43);
-        sleep(1000);
         //turnLeft
-        drive(-35, 35, -35, 35, 0.2);
-        sleep(500);
+        drive(-45, 45, -45, 45, 0.2);
+        drive(-10, -10, -10, 10, 0.2);
+        sleep(800);
         //drop
         claw.setPosition(0.50);
-        sleep(1000);
+        sleep(500);
         //turnLeft
         drive(-20, 20, -20, 20, 0.2);
-        sleep(500);
+        sleep(200);
         //servocompress
         rightArm.setPosition(1);
         leftArm.setPosition(0);
         sleep(1000);
         //armdown
-        //armMovementEncoder(390, 0.15);
-        //sleep(2000);
+        armMovementEncoder(405, 0.15);
+        sleep(200);
         //forward
-        //drive(30, 30, 30, 30, 0.2);
-        //sleep(2000);
+        drive(10, 10, 10, 10, 0.2);
+        sleep(200);
         //turnright
-        //drive(350, -350, -350, -350, 0.2);
-        //sleep(2000);
+        drive(350, -350, -350, -350, 0.2);
+        sleep(1000);
         telemetry.addData("end", "end");
-        numberofConesStack--;
 
+    }
+    
+    private void grab() {
+        //spinclaw
+        clawSpin.setPosition(0.09);
+        //clawOpen
+        claw.setPosition(0.50);
+        //forward
+        drive(265, 265, 265, 265, 0.2);
+        sleep(800);
+        //turnLeft
+        drive(-45, 45, -45, 45, 0.2);
+        sleep(300);
+        //forward
+        drive(35, 35, 35, 35, 0.2);
+        sleep(300);
+        //armUp
+        armMovementEncoder(-60, 1);
+        sleep(200);
+        //servoPosition
+        rightArm.setPosition(0.7);
+        leftArm.setPosition(0.3);
+        //armUp
+        armMovementEncoder(-45, 1);
+        sleep(1000);
+        //turnRight
+        drive(45, -45, 45, -45, 0.2);
+        sleep(500);
+        //clawClose
+        claw.setPosition(0.90);
+        sleep(300);
+        //servoPosition
+        rightArm.setPosition(1);
+        leftArm.setPosition(0);
+        //forward
+        drive(10, 10, 10, 10, 0.2);
+        sleep(200);
+        //back
+        drive(-300, -300, -300, -300, 0.2);
+        sleep(800);
+    }
+    
+    
+    
+    //double numberofConesStack = 5;
+
+    private void cycleTopCone2() {
+        //servoPosition
+        rightArm.setPosition(1);
+        leftArm.setPosition(0);
+        //turnLeft
+        drive(-255, 255, -255, 255, 0.2);
+        sleep(800);
+        //spinclaw
+        clawSpin.setPosition(0.715);
+        sleep(200);
+        //armallthewayback
+        armMovementEncoder(-270, 0.8);
+        sleep(300);
+        armMovementEncoder(-35, 0.4);
+        sleep(200);
+        //positionservos
+        rightArm.setPosition(0.57);
+        leftArm.setPosition(0.43);
+        //turnLeft
+        drive(-45, 45, -45, 45, 0.2);
+        drive(-10, -10, -10, 10, 0.2);
+        sleep(800);
+        //drop
+        claw.setPosition(0.50);
+        sleep(500);
+        //turnLeft
+        drive(-20, 20, -20, 20, 0.2);
+        sleep(200);
+        //servocompress
+        rightArm.setPosition(1);
+        leftArm.setPosition(0);
+        sleep(1000);
+        //armdown
+        armMovementEncoder(300, 0.1);
+        sleep(200);
+        //forward
+        drive(10, 10, 10, 10, 0.2);
+        sleep(200);
+        //armdown
+        armMovementEncoder(100, 0.1);
+        sleep(200);
+        //turnright
+        drive(350, -350, -350, -350, 0.2);
+        sleep(1000);
+        telemetry.addData("end", "end");
     }
     
     private void armMovementEncoder(int armTarget, double speed) {
@@ -591,5 +699,69 @@ public class Auto2Test extends LinearOpMode {
         telemetry.addData("- top/bottom","%.0f / %.0f", top, bottom);
         telemetry.addData("","");
         telemetry.update();
+    }
+    
+    private void move() {
+        telemetry.addData("move", "move");
+        telemetry.update();
+        //right
+        drive(40, -40, -40, 35, 0.2);
+        sleep(800);
+        //forward
+        drive(900, 900, 900, 900, 0.2);
+        sleep(1000);
+        //Backward
+        drive(-300, -300, -300, -300, 0.2);
+        sleep(300);
+    }
+    
+    private void park(String item) {
+        if (item == "red1") {
+            //moveLeft
+            sleep(500);
+            drive(-620, 620, 620, -620, 0.2);
+
+            //armUp
+            armMovementEncoder(-60, 0.8);
+            sleep(200);
+            //servoRest
+            rightArm.setPosition(0.71);
+            leftArm.setPosition(0.29);
+            clawSpin.setPosition(0.09);
+            sleep(500);
+            //armDown
+            armMovementEncoder(5, 0.1);
+            sleep(300);
+            
+        } else if (item == "red3") {
+            //moveRight
+            sleep(500);
+            drive(620, -620, -620, 620, 0.2);
+
+            //armUp`
+            armMovementEncoder(-60, 0.8);
+            sleep(200);
+            //servoRest
+            rightArm.setPosition(0.71);
+            leftArm.setPosition(0.29);
+            clawSpin.setPosition(0.09);
+            sleep(500);
+            //armDown
+            armMovementEncoder(5, 0.1);
+            sleep(300);
+
+        } else {
+            //armUp`
+            armMovementEncoder(-60, 0.8);
+            sleep(200);
+            //servoRest
+            rightArm.setPosition(0.71);
+            leftArm.setPosition(0.29);
+            clawSpin.setPosition(0.09);
+            sleep(500);
+            //armDown
+            armMovementEncoder(5, 0.1);
+            sleep(300);
+        }
     }
 }

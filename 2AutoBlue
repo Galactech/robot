@@ -224,6 +224,15 @@ public class AutoBlue extends LinearOpMode {
             // (typically 16/9).
             tfod.setZoom(1.0, 16.0/9.0);
         }
+        
+        //telemetry.addData("exit", "exit");
+        //telemetry.update();
+
+        /** Wait for the game to begin */
+        //telemetry.addData(">", "Press Play to start op mode");
+        
+        telemetry.update();
+        waitForStart();
         long startauton = System.currentTimeMillis();
         while (starting){
             long current = System.currentTimeMillis();
@@ -267,14 +276,8 @@ public class AutoBlue extends LinearOpMode {
                 } 
             }
         }
-        //telemetry.addData("exit", "exit");
-        //telemetry.update();
-
-        /** Wait for the game to begin */
-        //telemetry.addData(">", "Press Play to start op mode");
         telemetry.addData("sleeveRecognition", sleeveRecognition);
         telemetry.update();
-        waitForStart();
         if (opModeIsActive()) {
             long start = System.currentTimeMillis();
             long end = start + 5 * 1000;
